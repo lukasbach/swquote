@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Star Wars Quote</title>
+    <link rel="stylesheet" href="layout/lbpage.css">
+    <script src="https://use.fontawesome.com/fefb573f71.js"></script>
+</head>
+<body>
+    <div class="webcontainer">
+        <div class="menu light-bg">
+            <a href="http://lukasbach.com" target="_blank">
+                <div class="lukasbach goback"><span class="goback-text"><i class="fa fa-chevron-right" aria-hidden="true"></i></span><span class="lukas">lukas</span><span class="bach">bach</span></div>
+            </a>
+        </div>
+        <main class="content dark-bg">
+            <h1>Star Wars Quote</h1>
+
+            <div>
+                <div class="form-group">
+                    <label for="quotein">Enter a SW3 Quote</label>
+                    <input type="text" class="form-control" id="quotein"
+                           placeholder="The force is strong with you">
+                    <button class="btn light" onclick="seek(null)">Seek</button>
+
+                    <a href="#" onclick="seek('half')">half</a>
+                    <a href="#" onclick="seek('hello there')">hello there</a>
+                    <a href="#" onclick="seek('darth vader')">darth vader</a>
+                    <a href="#" onclick="seek('i hate you')">i hate you</a>
+                </div>
+
+                <video id="video" controls width="560">
+                    <source id="mp4" type="video/mp4" />
+                </video>
+
+
+                <div class="form-group">
+                    <input type="text" class="form-control" id="video-url" placeholder="Video URL"
+                           style="width: 560px" readonly>
+                </div>
+
+                <div style="width: 560px; text-align: justify">
+                    <h2>How it works</h2>
+
+                    <p>The application backend scans the subtitles file for the movie and creates
+                    an index in which it can search for quotes. The subtitle file maps small chunks of
+                    text to a start time and an end time, so when a quote search query is coming in,
+                    it looks through all those text chunks, matching the quote against the text. If it finds
+                    a matching text, it continues to match the rest of the quote against the following
+                    text chunks.</p>
+
+                    <p>After the start and end time of the quote in the movie is determined by doing that,
+                    ffmpeg is used to cut the corresponding part of the movie out. This cut is then being
+                    piped through an express.js app to serve the movie to the frontend via the url which
+                    is displayed below the video container.</p>
+
+                    <p>The application, both frontend and backend, are served via a heroku container.
+                    Because the container is using a free dyno with not much computing power, the app
+                    can take some time to find, cut and serve the video files, so expect waiting times
+                    of around 10 seconds per video lookup. I have also intensively reduced the video quality
+                    so that I am able to serve the movie with the free heroku dyno. The movie is scaled
+                    down to 240p with a video bitrate of 20kbit/s.</p>
+
+                    <p>To save processing power on the server and to make things easier, the video
+                    is only rendered into mp4 format, so if your browser does not load the video file,
+                    that might be why. If the quote could not be found, it also just does not load
+                    the video.</p>
+
+                    <p>The source code is available at <a href="https://github.com/lukasbach/swquote">GitHub</a>.</p>
+                </div>
+            </div>
+
+            <script>
+                function seek(q) {
+                    var quote = q || document.getElementById('quotein').value;
+                    if (q) document.getElementById('quotein').value = q;
+
+                    var video = document.getElementById('video');
+                    var mp4 = document.getElementById('mp4');
+
+                    mp4.src = "/v/" + quote;
+                    document.getElementById('video-url').value = mp4.src;
+
+                    console.log("Looking for ", mp4.src);
+
+                    video.load();
+                    video.play();
+                }
+            </script>
+        </main>
+    </div>
+</body>
+</html>
